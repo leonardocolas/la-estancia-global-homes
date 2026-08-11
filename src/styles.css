@@ -4,6 +4,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --font-display: "Urbanist", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Epilogue", ui-sans-serif, system-ui, sans-serif;
+}
+
 /*
  * Design system definition.
  *
@@ -62,26 +67,37 @@
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 0.875rem;
   --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  --foreground: oklch(0.24 0.058 258);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
+  --card-foreground: oklch(0.24 0.058 258);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
+  --popover-foreground: oklch(0.24 0.058 258);
+  --primary: oklch(0.26 0.072 259);
+  --primary-foreground: oklch(0.99 0.004 247);
+  --secondary: oklch(0.962 0.01 247);
+  --secondary-foreground: oklch(0.26 0.072 259);
+  --muted: oklch(0.962 0.01 247);
+  --muted-foreground: oklch(0.55 0.033 256);
+  --accent: oklch(0.6 0.148 258);
+  --accent-foreground: oklch(0.99 0.004 247);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
+  --border: oklch(0.918 0.014 252);
+  --input: oklch(0.918 0.014 252);
+  --ring: oklch(0.6 0.148 258);
+  --surface: oklch(0.972 0.008 250);
+  --gold: oklch(0.78 0.11 85);
+  --gradient-hero: linear-gradient(
+    to top,
+    color-mix(in oklab, var(--primary) 92%, transparent),
+    color-mix(in oklab, var(--primary) 40%, transparent) 55%,
+    transparent
+  );
+  --gradient-accent: linear-gradient(135deg, var(--accent), oklch(0.68 0.13 232));
+  --shadow-card: 0 1px 2px oklch(0.26 0.072 259 / 6%), 0 16px 40px -24px oklch(0.26 0.072 259 / 28%);
+  --shadow-lift: 0 24px 60px -28px oklch(0.26 0.072 259 / 38%);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
