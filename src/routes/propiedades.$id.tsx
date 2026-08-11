@@ -25,7 +25,7 @@ export const Route = createFileRoute("/propiedades/$id")({
       ],
     };
   },
-  component: PropertyDetail;
+  component: PropertyDetail,
 });
 
 function PropertyDetail() {
