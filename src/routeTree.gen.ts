@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedMisCasasRouteImport } from './routes/_authenticated/mis-casas'
 import { Route as AuthenticatedPublicarRouteImport } from './routes/_authenticated/publicar'
 import { Route as PropiedadesIndexRouteImport } from './routes/propiedades.index'
 import { Route as PropiedadesIdRouteImport } from './routes/propiedades.$id'
@@ -29,6 +30,11 @@ const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedMisCasasRoute = AuthenticatedMisCasasRouteImport.update({
+  id: '/mis-casas',
+  path: '/mis-casas',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPublicarRoute = AuthenticatedPublicarRouteImport.update({
   id: '/publicar',
@@ -49,6 +55,7 @@ const PropiedadesIdRoute = PropiedadesIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/mis-casas': typeof AuthenticatedMisCasasRoute
   '/publicar': typeof AuthenticatedPublicarRoute
   '/propiedades/$id': typeof PropiedadesIdRoute
   '/propiedades/': typeof PropiedadesIndexRoute
@@ -56,6 +63,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/mis-casas': typeof AuthenticatedMisCasasRoute
   '/publicar': typeof AuthenticatedPublicarRoute
   '/propiedades/$id': typeof PropiedadesIdRoute
   '/propiedades': typeof PropiedadesIndexRoute
@@ -65,20 +73,34 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/mis-casas': typeof AuthenticatedMisCasasRoute
   '/_authenticated/publicar': typeof AuthenticatedPublicarRoute
   '/propiedades/$id': typeof PropiedadesIdRoute
   '/propiedades/': typeof PropiedadesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/publicar' | '/propiedades/$id' | '/propiedades/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/mis-casas'
+    | '/publicar'
+    | '/propiedades/$id'
+    | '/propiedades/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/publicar' | '/propiedades/$id' | '/propiedades'
+  to:
+    | '/'
+    | '/auth'
+    | '/mis-casas'
+    | '/publicar'
+    | '/propiedades/$id'
+    | '/propiedades'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/mis-casas'
     | '/_authenticated/publicar'
     | '/propiedades/$id'
     | '/propiedades/'
@@ -115,6 +137,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/mis-casas': {
+      id: '/_authenticated/mis-casas'
+      path: '/mis-casas'
+      fullPath: '/mis-casas'
+      preLoaderRoute: typeof AuthenticatedMisCasasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/publicar': {
       id: '/_authenticated/publicar'
       path: '/publicar'
@@ -140,10 +169,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedMisCasasRoute: typeof AuthenticatedMisCasasRoute
   AuthenticatedPublicarRoute: typeof AuthenticatedPublicarRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedMisCasasRoute: AuthenticatedMisCasasRoute,
   AuthenticatedPublicarRoute: AuthenticatedPublicarRoute,
 }
 
