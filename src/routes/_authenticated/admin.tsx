@@ -9,7 +9,7 @@ import {
   setPropertyStatus,
 } from "@/lib/properties.functions";
 import { formatPrice, useI18n } from "@/lib/i18n";
-import type { PropertyStatus } from "@/data/property-types";
+import type { Status } from "@/data/property-types";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -51,7 +51,7 @@ function AdminPage() {
   };
 
   const status = useMutation({
-    mutationFn: (vars: { id: string; status: PropertyStatus; verified?: boolean }) =>
+    mutationFn: (vars: { id: string; status: Status; verified?: boolean }) =>
       changeStatus({ data: vars }),
     onSuccess: refresh,
     onError: (e: Error) => toast.error(e.message),
