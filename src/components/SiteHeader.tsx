@@ -1,15 +1,33 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 export function SiteHeader() {
   const { t, lang, setLang } = useI18n();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
-  const links = [
-    { to: "/", label: t("nav_home") },
-    { to: "/propiedades", label: t("nav_properties") },
-    { to: "/publicar", label: t("nav_publish") },
-    { to: "/admin", label: t("nav_admin") },
-  ] as const;
+  const links = (
+    user
+      ? [
+          { to: "/", label: t("nav_home") },
+          { to: "/propiedades", label: t("nav_properties") },
+          { to: "/publicar", label: t("nav_publish") },
+          { to: "/mis-casas", label: t("nav_mine") },
+          { to: "/admin", label: t("nav_admin") },
+        ]
+      : [
+          { to: "/", label: t("nav_home") },
+          { to: "/propiedades", label: t("nav_properties") },
+          { to: "/publicar", label: t("nav_publish") },
+        ]
+  ) as { to: "/" | "/propiedades" | "/publicar" | "/mis-casas" | "/admin"; label: string }[];
+
+  async function signOut() {
+    await supabase.auth.signOut();
+    void navigate({ to: "/" });
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur">
@@ -52,12 +70,22 @@ export function SiteHeader() {
               </button>
             ))}
           </div>
-          <Link
-            to="/publicar"
-            className="hidden rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90 sm:inline-flex"
-          >
-            {t("nav_publish")}
-          </Link>
+          {user ? (
+            <button
+              type="button"
+              onClick={signOut}
+              className="hidden rounded-lg border border-border px-4 py-2 text-sm font-semibold transition-colors hover:bg-surface sm:inline-flex"
+            >
+              {t("nav_logout")}
+            </button>
+          ) : (
+            <Link
+              to="/auth"
+              className="hidden rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90 sm:inline-flex"
+            >
+              {t("nav_login")}
+            </Link>
+          )}
         </div>
       </div>
 

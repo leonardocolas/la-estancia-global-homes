@@ -1,8 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import heroImg from "@/assets/hero.jpg";
 import { PropertyCard } from "@/components/PropertyCard";
-import { countries, properties } from "@/data/properties";
+import { listPublishedProperties } from "@/lib/properties.functions";
 import { useI18n } from "@/lib/i18n";
+
+const publishedQuery = queryOptions({
+  queryKey: ["properties", "published"],
+  queryFn: () => listPublishedProperties(),
+});
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -21,11 +27,20 @@ export const Route = createFileRoute("/")({
     ],
   }),
   component: Index,
+  loader: ({ context }) => context.queryClient.ensureQueryData(publishedQuery),
+  errorComponent: () => (
+    <div className="mx-auto max-w-3xl px-4 py-24 text-center text-muted-foreground">
+      No pudimos cargar las propiedades. Recarga la página.
+    </div>
+  ),
 });
 
 function Index() {
   const { t } = useI18n();
-  const featured = properties.filter((p) => p.status === "published").slice(0, 6);
+  const { data } = useSuspenseQuery(publishedQuery);
+  const all = data.properties;
+  const featured = all.slice(0, 6);
+  const countryCount = new Set(all.map((p) => p.country)).size;
 
   return (
     <div>
@@ -120,6 +135,9 @@ function Index() {
         </div>
 
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {featured.length === 0 && (
+            <p className="text-muted-foreground sm:col-span-2 lg:col-span-3">{t("empty_catalog")}</p>
+          )}
           {featured.map((p) => (
             <PropertyCard key={p.id} property={p} />
           ))}
@@ -130,13 +148,13 @@ function Index() {
         <div className="rounded-3xl border border-border bg-surface p-8 sm:p-12">
           <div className="grid gap-8 sm:grid-cols-3">
             <div>
-              <p className="font-display text-4xl font-bold">{countries.length * 12}+</p>
+              <p className="font-display text-4xl font-bold">{all.length}</p>
               <p className="mt-1 text-sm text-muted-foreground">
                 {t("nav_properties")} · {t("footer_note")}
               </p>
             </div>
             <div>
-              <p className="font-display text-4xl font-bold">40+</p>
+              <p className="font-display text-4xl font-bold">{countryCount}</p>
               <p className="mt-1 text-sm text-muted-foreground">{t("country")}</p>
             </div>
             <div>

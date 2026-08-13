@@ -1,13 +1,23 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { properties } from "@/data/properties";
+import { getPublishedProperty } from "@/lib/properties.functions";
 import { formatPrice, useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/propiedades/$id")({
-  loader: ({ params }) => {
-    const property = properties.find((p) => p.id === params.id);
+  loader: async ({ params }) => {
+    const { property } = await getPublishedProperty({ data: { id: params.id } });
     if (!property) throw notFound();
     return { property };
   },
+  errorComponent: () => (
+    <div className="mx-auto max-w-3xl px-4 py-24 text-center text-muted-foreground">
+      No pudimos cargar esta propiedad.
+    </div>
+  ),
+  notFoundComponent: () => (
+    <div className="mx-auto max-w-3xl px-4 py-24 text-center text-muted-foreground">
+      Esta propiedad no está disponible.
+    </div>
+  ),
   head: ({ loaderData }) => {
     if (!loaderData) {
       return {
@@ -31,6 +41,7 @@ export const Route = createFileRoute("/propiedades/$id")({
 function PropertyDetail() {
   const { property } = Route.useLoaderData();
   const { t, lang } = useI18n();
+  const gallery = property.images.length > 0 ? property.images : [property.image];
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
@@ -50,6 +61,20 @@ function PropertyDetail() {
           className="aspect-[16/9] w-full object-cover"
         />
       </div>
+
+      {gallery.length > 1 && (
+        <div className="mt-3 grid grid-cols-3 gap-3 sm:grid-cols-5">
+          {gallery.slice(1, 6).map((src) => (
+            <img
+              key={src}
+              src={src}
+              alt={property.title[lang]}
+              loading="lazy"
+              className="aspect-[4/3] w-full rounded-xl border border-border object-cover"
+            />
+          ))}
+        </div>
+      )}
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[1.6fr_1fr]">
         <div>
