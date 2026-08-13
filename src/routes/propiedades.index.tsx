@@ -1,8 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { PropertyCard } from "@/components/PropertyCard";
-import { countries, properties, type Operation } from "@/data/properties";
+import type { Operation } from "@/data/properties";
+import { listPublishedProperties } from "@/lib/properties.functions";
 import { useI18n } from "@/lib/i18n";
+
+const publishedQuery = queryOptions({
+  queryKey: ["properties", "published"],
+  queryFn: () => listPublishedProperties(),
+});
 
 export const Route = createFileRoute("/propiedades/")({
   head: () => ({
@@ -21,18 +28,29 @@ export const Route = createFileRoute("/propiedades/")({
     ],
   }),
   component: PropertiesPage,
+  loader: ({ context }) => context.queryClient.ensureQueryData(publishedQuery),
+  errorComponent: () => (
+    <div className="mx-auto max-w-3xl px-4 py-24 text-center text-muted-foreground">
+      No pudimos cargar las propiedades. Recarga la página.
+    </div>
+  ),
 });
 
 function PropertiesPage() {
   const { t, lang } = useI18n();
+  const { data } = useSuspenseQuery(publishedQuery);
+  const properties = data.properties;
   const [op, setOp] = useState<Operation | "all">("all");
   const [country, setCountry] = useState<string>("all");
   const [query, setQuery] = useState("");
+  const countries = useMemo(
+    () => [...new Set(properties.map((p) => p.country))].sort(),
+    [properties],
+  );
 
   const results = useMemo(
     () =>
       properties.filter((p) => {
-        if (p.status !== "published") return false;
         if (op !== "all" && p.operation !== op) return false;
         if (country !== "all" && p.country !== country) return false;
         if (query.trim()) {
@@ -42,7 +60,7 @@ function PropertiesPage() {
         }
         return true;
       }),
-    [op, country, query, lang],
+    [properties, op, country, query, lang],
   );
 
   return (
