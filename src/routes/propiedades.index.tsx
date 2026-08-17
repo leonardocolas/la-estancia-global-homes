@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, stripSearchParams } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
@@ -24,6 +24,9 @@ const catalogQuery = (filters: Filters) =>
 
 export const Route = createFileRoute("/propiedades/")({
   validateSearch: zodValidator(searchSchema),
+  search: {
+    middlewares: [stripSearchParams({ q: "", country: "all", operation: "all", page: 1 })],
+  },
   loaderDeps: ({ search }) => ({
     q: search.q,
     country: search.country,
