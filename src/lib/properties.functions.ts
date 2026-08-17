@@ -50,6 +50,59 @@ export const getPublishedProperty = createServerFn({ method: "GET" })
     return { property: property ?? null };
   });
 
+const searchInput = z.object({
+  q: z.string().optional().default(""),
+  country: z.string().optional().default("all"),
+  operation: z.string().optional().default("all"),
+  page: z.number().int().optional().default(1),
+  pageSize: z.number().int().optional().default(9),
+});
+
+export const searchPublishedProperties = createServerFn({ method: "GET" })
+  .inputValidator((input: unknown) => searchInput.parse(input ?? {}))
+  .handler(async ({ data }) => {
+    const client = createPublicClient();
+    const pageSize = Math.min(Math.max(data.pageSize, 1), 48);
+    const page = Math.max(data.page, 1);
+
+    const facets = await client.from("properties").select("country").eq("status", "published");
+    const countries = [...new Set((facets.data ?? []).map((r) => r.country).filter(Boolean))].sort();
+
+    let query = client
+      .from("properties")
+      .select("*", { count: "exact" })
+      .eq("status", "published");
+
+    if (data.country !== "all") query = query.eq("country", data.country);
+    if (data.operation === "sale" || data.operation === "rent") {
+      query = query.eq("operation", data.operation);
+    }
+    const term = data.q.trim().slice(0, 100);
+    if (term) {
+      const like = `%${term.replace(/[%,()]/g, " ")}%`;
+      query = query.or(
+        `title_es.ilike.${like},title_en.ilike.${like},city.ilike.${like},country.ilike.${like}`,
+      );
+    }
+
+    const from = (page - 1) * pageSize;
+    const { data: rows, count, error } = await query
+      .order("created_at", { ascending: false })
+      .range(from, from + pageSize - 1);
+
+    if (error) {
+      return { properties: [], total: 0, page, pageSize, countries, error: error.message };
+    }
+    return {
+      properties: await mapRows(client, rows ?? []),
+      total: count ?? 0,
+      page,
+      pageSize,
+      countries,
+      error: null,
+    };
+  });
+
 export const getMyAccess = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
