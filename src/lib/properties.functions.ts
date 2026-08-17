@@ -103,21 +103,6 @@ export const searchPublishedProperties = createServerFn({ method: "GET" })
     };
   });
 
-const _unusedGetPublishedProperty = createServerFn({ method: "GET" })
-  .inputValidator((input: { id: string }) => z.object({ id: z.string().uuid() }).parse(input))
-  .handler(async ({ data }) => {
-    const client = createPublicClient();
-    const { data: rows, error } = await client
-      .from("properties")
-      .select("*")
-      .eq("id", data.id)
-      .eq("status", "published")
-      .limit(1);
-    if (error || !rows || rows.length === 0) return { property: null };
-    const [property] = await mapRows(client, rows);
-    return { property: property ?? null };
-  });
-
 export const getMyAccess = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
