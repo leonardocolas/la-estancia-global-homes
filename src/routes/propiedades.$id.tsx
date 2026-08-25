@@ -198,10 +198,7 @@ function PropertyDetail() {
 
       {/* Lightbox */}
       <Dialog open={lightbox} onOpenChange={setLightbox}>
-        <DialogContent
-          className="max-w-5xl border-none bg-transparent p-0 shadow-none"
-          showCloseButton
-        >
+        <DialogContent className="max-w-5xl border-none bg-transparent p-0 shadow-none">
           <DialogTitle className="sr-only">{property.title[lang]}</DialogTitle>
           <img
             src={gallery[active]}
