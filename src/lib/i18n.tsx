@@ -143,6 +143,13 @@ const dict: Dict = {
   status_rejected: { es: "Rechazada", en: "Rejected" },
   approve: { es: "Aprobar", en: "Approve" },
   reject: { es: "Rechazar", en: "Reject" },
+  location: { es: "Ubicación", en: "Location" },
+  view_map: { es: "Ver en Google Maps", en: "View on Google Maps" },
+  share: { es: "Compartir", en: "Share" },
+  link_copied: { es: "Enlace copiado al portapapeles", en: "Link copied to clipboard" },
+  similar: { es: "Propiedades similares en la zona", en: "Similar properties in the area" },
+  gallery_open: { es: "Ver galería completa", en: "View full gallery" },
+  close: { es: "Cerrar", en: "Close" },
   footer_rights: { es: "Todos los derechos reservados.", en: "All rights reserved." },
   footer_note: {
     es: "Casas para venta y renta en más de 40 países.",
